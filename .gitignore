@@ -3,3 +3,4 @@
 .pub
 .packages
 build
+lib/.DS_Store

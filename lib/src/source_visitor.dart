@@ -3,6 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 // ignore_for_file: avoid_dynamic_calls
 
+import 'dart:developer';
+
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
@@ -190,6 +192,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   /// splits, the corresponding "else" one does too.
   final Map<Token, Rule> _blockRules = {};
   final Map<Token, Chunk> _blockPreviousChunks = {};
+  final bool useGgModifications;
 
   /// Comments and new lines attached to tokens added here are suppressed
   /// from the output.
@@ -197,7 +200,8 @@ class SourceVisitor extends ThrowingAstVisitor {
 
   /// Initialize a newly created visitor to write source code representing
   /// the visited nodes to the given [writer].
-  SourceVisitor(this._formatter, this._lineInfo, this._source)
+  SourceVisitor(
+      this._formatter, this._lineInfo, this._source, this.useGgModifications)
       : builder = ChunkBuilder(_formatter, _source);
 
   /// Runs the visitor on [node], formatting its contents.
@@ -2686,14 +2690,54 @@ class SourceVisitor extends ThrowingAstVisitor {
     });
   }
 
+  // ...........................................................................
+  T? child<T>(AstNode? node, int at) {
+    if (node == null) {
+      return null;
+    }
+
+    if (at >= node.childEntities.length) {
+      return null;
+    }
+
+    final result = node.childEntities.elementAt(at);
+    if (result is T) {
+      return result as T;
+    }
+
+    return null;
+  }
+
+  // ...........................................................................
+  void ggProcessTestExceptionType(TryStatement node) {
+    final throwingCode = child<Block>(node, 1);
+    final catchClause = child<CatchClause>(node, 2);
+    final block = child<Block>(catchClause, 6);
+    final expression = child<ExpressionStatement>(block, 1);
+    final methodInvocation = child<MethodInvocation>(expression, 0);
+    final argumentList = child<ArgumentList>(methodInvocation, 1);
+    final isExpression = child<IsExpression>(argumentList, 1);
+    final errorType = child<NamedType>(isExpression, 2);
+    if (errorType != null && throwingCode != null) {
+      _writeText('expect(    () ', node.offset);
+      visit(node.body);
+      _writeText(', throwsA(isA<${errorType.name.name}>(),),);', node.offset);
+    }
+  }
+
+  // ...........................................................................
   @override
   void visitTryStatement(TryStatement node) {
-    token(node.tryKeyword);
-    space();
-    visit(node.body);
-    visitNodes(node.catchClauses, before: space, between: space);
-    token(node.finallyKeyword, before: space, after: space);
-    visit(node.finallyBlock);
+    if (useGgModifications) {
+      ggProcessTestExceptionType(node);
+    } else {
+      token(node.tryKeyword);
+      space();
+      visit(node.body);
+      visitNodes(node.catchClauses, before: space, between: space);
+      token(node.finallyKeyword, before: space, after: space);
+      visit(node.finallyBlock);
+    }
   }
 
   @override
