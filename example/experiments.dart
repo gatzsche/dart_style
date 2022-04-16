@@ -47,22 +47,31 @@ void _fixTryCatch(FileSystemEntity fileSystemEntity) {
 main() {
   const basePath = '/Users/gatzsche/dev/bmw/mobile-connected';
   const subDirs = [
-    'common_api',
-    'feature_module_components',
-    'feature_modules',
-    'localizations_sdk',
-    'platform_sdk',
-    'platform_sdk_test',
-    'plugins',
-    'repositories',
-    'shell',
-    'test',
+    'common_api/',
+    'feature_module_components/',
+    'feature_modules/',
+    'localizations_sdk/',
+    'platform_sdk/',
+    'platform_sdk_test/',
+    'plugins/',
+    'repositories/',
+    'shell/',
+    'test/',
+    '',
   ];
 
-  const folder = '/Users/gatzsche/dev/bmw/mobile-connected';
+  String? singleFileToTest;
+  // singleFileToTest =
+  //     '/Users/gatzsche/dev/bmw/mobile-connected/feature_modules/bmw_points/test/repository_test/bmw_points_repository_test.dart';
+
+  // ignore: unnecessary_null_comparison
+  if (singleFileToTest != null) {
+    _fixTryCatch(File(singleFileToTest));
+    return;
+  }
 
   for (final subDir in subDirs) {
-    final files = Glob('$folder/$subDir/**test/**.dart', recursive: true);
+    final files = Glob('$basePath/$subDir/**test/**.dart', recursive: true);
     for (var entity in files.listSync()) {
       _fixTryCatch(entity);
     }

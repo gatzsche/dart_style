@@ -59,8 +59,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     // A prefixed unnamed constructor call:
     //
     //     prefix.Foo();
-    if (node.target is SimpleIdentifier &&
-        _looksLikeClassName(node.methodName.name)) {
+    if (node.target is SimpleIdentifier && _looksLikeClassName(node.methodName.name)) {
       return true;
     }
 
@@ -116,8 +115,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     return false;
   }
 
-  static bool _isControlFlowElement(AstNode node) =>
-      node is IfElement || node is ForElement;
+  static bool _isControlFlowElement(AstNode node) => node is IfElement || node is ForElement;
 
   /// The builder for the block that is currently being visited.
   ChunkBuilder builder;
@@ -200,8 +198,7 @@ class SourceVisitor extends ThrowingAstVisitor {
 
   /// Initialize a newly created visitor to write source code representing
   /// the visited nodes to the given [writer].
-  SourceVisitor(
-      this._formatter, this._lineInfo, this._source, this.useGgModifications)
+  SourceVisitor(this._formatter, this._lineInfo, this._source, this.useGgModifications)
       : builder = ChunkBuilder(_formatter, _source);
 
   /// Runs the visitor on [node], formatting its contents.
@@ -271,9 +268,7 @@ class SourceVisitor extends ThrowingAstVisitor {
         shouldNest = true;
       }
     } else if (parent is VariableDeclaration ||
-        parent is AssignmentExpression &&
-            parent.rightHandSide == node &&
-            parent.parent is ExpressionStatement) {
+        parent is AssignmentExpression && parent.rightHandSide == node && parent.parent is ExpressionStatement) {
       // Don't add extra indentation in a variable initializer or assignment:
       //
       //     var variable =
@@ -341,8 +336,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     // literal where each argument goes on its own line, they are indented +2,
     // and the ")" ends up on its own line.
     if (hasCommaAfter(node.arguments.last)) {
-      _visitCollectionLiteral(
-          null, node.leftParenthesis, node.arguments, node.rightParenthesis);
+      _visitCollectionLiteral(null, node.leftParenthesis, node.arguments, node.rightParenthesis);
       return;
     }
 
@@ -375,14 +369,12 @@ class SourceVisitor extends ThrowingAstVisitor {
     // literal where each argument goes on its own line, they are indented +2,
     // and the ")" ends up on its own line.
     if (hasCommaAfter(arguments.last)) {
-      _visitCollectionLiteral(
-          null, node.leftParenthesis, arguments, node.rightParenthesis);
+      _visitCollectionLiteral(null, node.leftParenthesis, arguments, node.rightParenthesis);
       return;
     }
 
     builder.nestExpression();
-    var visitor = ArgumentListVisitor.forArguments(
-        this, node.leftParenthesis, node.rightParenthesis, arguments);
+    var visitor = ArgumentListVisitor.forArguments(this, node.leftParenthesis, node.rightParenthesis, arguments);
     visitor.visit();
     builder.unnest();
   }
@@ -399,13 +391,11 @@ class SourceVisitor extends ThrowingAstVisitor {
       // literal where each argument goes on its own line, they are indented +2,
       // and the ")" ends up on its own line.
       if (hasCommaAfter(arguments.last)) {
-        _visitCollectionLiteral(
-            null, node.leftParenthesis, arguments, node.rightParenthesis);
+        _visitCollectionLiteral(null, node.leftParenthesis, arguments, node.rightParenthesis);
         return;
       }
 
-      var visitor = ArgumentListVisitor.forArguments(
-          this, node.leftParenthesis, node.rightParenthesis, arguments);
+      var visitor = ArgumentListVisitor.forArguments(this, node.leftParenthesis, node.rightParenthesis, arguments);
       visitor.visit();
     });
   }
@@ -522,8 +512,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     if (node.statements.isNotEmpty) newline();
 
     if (node.parent is BlockFunctionBody) {
-      _endLiteralBody(node.rightBracket,
-          forceSplit: node.statements.isNotEmpty);
+      _endLiteralBody(node.rightBracket, forceSplit: node.statements.isNotEmpty);
     } else {
       _endBody(node.rightBracket);
     }
@@ -573,8 +562,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     //       stuff
     //     ]
     //       ..add(more);
-    var splitIfOperandsSplit =
-        node.cascadeSections.length > 1 || _isCollectionLike(node.target);
+    var splitIfOperandsSplit = node.cascadeSections.length > 1 || _isCollectionLike(node.target);
     if (splitIfOperandsSplit) {
       builder.startLazyRule(_allowInlineCascade(node) ? Rule() : Rule.hard());
     }
@@ -717,9 +705,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     //       element
     //     ])..cascade();
 
-    return arguments == null ||
-        arguments.arguments.isEmpty ||
-        !hasCommaAfter(arguments.arguments.last);
+    return arguments == null || arguments.arguments.isEmpty || !hasCommaAfter(arguments.arguments.last);
   }
 
   /// Whether a cascade should be allowed to be inline as opposed to moving the
@@ -838,9 +824,8 @@ class SourceVisitor extends ThrowingAstVisitor {
 
     var needsDouble = true;
     for (var declaration in node.declarations) {
-      var hasBody = declaration is ClassDeclaration ||
-          declaration is EnumDeclaration ||
-          declaration is ExtensionDeclaration;
+      var hasBody =
+          declaration is ClassDeclaration || declaration is EnumDeclaration || declaration is ExtensionDeclaration;
 
       // Add a blank line before types with bodies.
       if (hasBody) needsDouble = true;
@@ -984,8 +969,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   void _visitConstructorInitializers(ConstructorDeclaration node) {
-    var hasTrailingComma = node.parameters.parameters.isNotEmpty &&
-        hasCommaAfter(node.parameters.parameters.last);
+    var hasTrailingComma = node.parameters.parameters.isNotEmpty && hasCommaAfter(node.parameters.parameters.last);
 
     if (hasTrailingComma) {
       // Since the ")", "])", or "})" on the preceding line doesn't take up
@@ -1000,8 +984,7 @@ class SourceVisitor extends ThrowingAstVisitor {
       space();
       if (node.initializers.length > 1) {
         var padding = '  ';
-        if (node.parameters.parameters.last.isNamed ||
-            node.parameters.parameters.last.isOptionalPositional) {
+        if (node.parameters.parameters.last.isNamed || node.parameters.parameters.last.isOptionalPositional) {
           padding = ' ';
         }
         _writeText(padding, node.separator!.offset);
@@ -1219,8 +1202,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     Token? semicolon;
     if (afterConstants.type == TokenType.SEMICOLON) {
       semicolon = node.constants.last.endToken.next!;
-    } else if (trailingComma != null &&
-        trailingComma.next!.type == TokenType.SEMICOLON) {
+    } else if (trailingComma != null && trailingComma.next!.type == TokenType.SEMICOLON) {
       semicolon = afterConstants.next!;
     }
 
@@ -1333,9 +1315,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     var subexpression = cascade.cascadeSections.single;
     builder.nestExpression();
 
-    if (subexpression is AssignmentExpression ||
-        subexpression is MethodInvocation ||
-        subexpression is PropertyAccess) {
+    if (subexpression is AssignmentExpression || subexpression is MethodInvocation || subexpression is PropertyAccess) {
       // CascadeExpression("leftHandSide", "..",
       //     AssignmentExpression("target", "=", "rightHandSide"))
       //
@@ -1357,11 +1337,9 @@ class SourceVisitor extends ThrowingAstVisitor {
       //     "methodName", ...)
       //
       // And similarly for PropertyAccess expressions.
-      visit(insertCascadeTargetIntoExpression(
-          expression: subexpression, cascadeTarget: cascade.target));
+      visit(insertCascadeTargetIntoExpression(expression: subexpression, cascadeTarget: cascade.target));
     } else {
-      throw UnsupportedError(
-          '--fix-single-cascade-statements: subexpression of cascade '
+      throw UnsupportedError('--fix-single-cascade-statements: subexpression of cascade '
           '"$cascade" has unsupported type ${subexpression.runtimeType}.');
     }
 
@@ -1492,8 +1470,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   @override
-  void visitFormalParameterList(FormalParameterList node,
-      {bool nestExpression = true}) {
+  void visitFormalParameterList(FormalParameterList node, {bool nestExpression = true}) {
     // Corner case: empty parameter lists.
     if (node.parameters.isEmpty) {
       token(node.leftParenthesis);
@@ -1513,11 +1490,8 @@ class SourceVisitor extends ThrowingAstVisitor {
       return;
     }
 
-    var requiredParams = node.parameters
-        .where((param) => param is! DefaultFormalParameter)
-        .toList();
-    var optionalParams =
-        node.parameters.whereType<DefaultFormalParameter>().toList();
+    var requiredParams = node.parameters.where((param) => param is! DefaultFormalParameter).toList();
+    var optionalParams = node.parameters.whereType<DefaultFormalParameter>().toList();
 
     if (nestExpression) builder.nestExpression();
     token(node.leftParenthesis);
@@ -1804,15 +1778,14 @@ class SourceVisitor extends ThrowingAstVisitor {
     if (_formatter.fixes.contains(StyleFix.functionTypedefs)) {
       _simpleStatement(node, () {
         // Inlined visitGenericTypeAlias
-        _visitGenericTypeAliasHeader(node.typedefKeyword, node.name,
-            node.typeParameters, null, (node.returnType ?? node.name).offset);
+        _visitGenericTypeAliasHeader(
+            node.typedefKeyword, node.name, node.typeParameters, null, (node.returnType ?? node.name).offset);
 
         space();
 
         // Recursively convert function-arguments to Function syntax.
         _insideNewTypedefFix = true;
-        _visitGenericFunctionType(
-            node.returnType, null, node.name.offset, null, node.parameters);
+        _visitGenericFunctionType(node.returnType, null, node.name.offset, null, node.parameters);
         _insideNewTypedefFix = false;
       });
       return;
@@ -1843,8 +1816,7 @@ class SourceVisitor extends ThrowingAstVisitor {
         builder.endSpan();
       } else {
         _beginFormalParameter(node);
-        _visitGenericFunctionType(node.returnType, null, node.identifier.offset,
-            node.typeParameters, node.parameters);
+        _visitGenericFunctionType(node.returnType, null, node.identifier.offset, node.typeParameters, node.parameters);
         token(node.question);
         split();
         visit(node.identifier);
@@ -1855,8 +1827,7 @@ class SourceVisitor extends ThrowingAstVisitor {
 
   @override
   void visitGenericFunctionType(GenericFunctionType node) {
-    _visitGenericFunctionType(node.returnType, node.functionKeyword, null,
-        node.typeParameters, node.parameters);
+    _visitGenericFunctionType(node.returnType, node.functionKeyword, null, node.typeParameters, node.parameters);
     token(node.question);
   }
 
@@ -1864,8 +1835,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   void visitGenericTypeAlias(GenericTypeAlias node) {
     visitNodes(node.metadata, between: newline, after: newline);
     _simpleStatement(node, () {
-      _visitGenericTypeAliasHeader(node.typedefKeyword, node.name,
-          node.typeParameters, node.equals, null);
+      _visitGenericTypeAliasHeader(node.typedefKeyword, node.name, node.typeParameters, node.equals, null);
 
       space();
 
@@ -1883,10 +1853,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     // Treat a chain of if-else elements as a single unit so that we don't
     // unnecessarily indent each subsequent section of the chain.
     var ifElements = [
-      for (CollectionElement? thisNode = node;
-          thisNode is IfElement;
-          thisNode = thisNode.elseElement)
-        thisNode
+      for (CollectionElement? thisNode = node; thisNode is IfElement; thisNode = thisNode.elseElement) thisNode
     ];
 
     // If the body of the then or else branch is a spread of a collection
@@ -1923,8 +1890,7 @@ class SourceVisitor extends ThrowingAstVisitor {
       }
     }
 
-    var elseSpreadBracket =
-        _findSpreadCollectionBracket(ifElements.last.elseElement);
+    var elseSpreadBracket = _findSpreadCollectionBracket(ifElements.last.elseElement);
     if (elseSpreadBracket != null) {
       spreadBrackets[ifElements.last.elseElement!] = elseSpreadBracket;
       beforeBlock(elseSpreadBracket, spreadRule, null);
@@ -2130,8 +2096,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     var includeKeyword = true;
 
     if (node.keyword != null) {
-      if (node.keyword!.keyword == Keyword.NEW &&
-          _formatter.fixes.contains(StyleFix.optionalNew)) {
+      if (node.keyword!.keyword == Keyword.NEW && _formatter.fixes.contains(StyleFix.optionalNew)) {
         includeKeyword = false;
       } else if (node.keyword!.keyword == Keyword.CONST &&
           _formatter.fixes.contains(StyleFix.optionalConst) &&
@@ -2237,8 +2202,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     // Corner case: Splitting inside a list looks bad if there's only one
     // element, so make those more costly.
     var cost = node.elements.length <= 1 ? Cost.singleElementList : Cost.normal;
-    _visitCollectionLiteral(
-        node, node.leftBracket, node.elements, node.rightBracket, cost);
+    _visitCollectionLiteral(node, node.leftBracket, node.elements, node.rightBracket, cost);
   }
 
   @override
@@ -2256,8 +2220,39 @@ class SourceVisitor extends ThrowingAstVisitor {
     _visitMemberDeclaration(node, node);
   }
 
+  // ...........................................................................
+  bool ggProcessMethodInvoation06(MethodInvocation methodInvocation) {
+    final methodName = _child<SimpleIdentifier>(methodInvocation, 0, 2, 1);
+    final arguments = _child<ArgumentList>(methodInvocation, 1, 2, 1);
+    final argumentString = _child<SimpleStringLiteral>(arguments, 1, 3, 1);
+
+    final methodsToRemove = [
+      'this code should fail',
+      'should throw assertion error',
+      'test should fail',
+      'should throw error',
+    ];
+
+    if (methodName?.name == 'fail') {
+      if (methodsToRemove.contains(argumentString?.stringValue)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ...........................................................................
   @override
   void visitMethodInvocation(MethodInvocation node) {
+    var didProcess = false;
+    if (useGgModifications) {
+      didProcess = ggProcessMethodInvoation06(node);
+    }
+
+    if (didProcess) {
+      return;
+    }
+
     // If there's no target, this is a "bare" function call like "foo(1, 2)",
     // or a section in a cascade.
     //
@@ -2442,8 +2437,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     // Edge case: put a space after "-" if the operand is "-" or "--" so we
     // don't merge the operators.
     var operand = node.operand;
-    if (operand is PrefixExpression &&
-        (operand.operator.lexeme == '-' || operand.operator.lexeme == '--')) {
+    if (operand is PrefixExpression && (operand.operator.lexeme == '-' || operand.operator.lexeme == '--')) {
       space();
     }
 
@@ -2462,8 +2456,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   @override
-  void visitRedirectingConstructorInvocation(
-      RedirectingConstructorInvocation node) {
+  void visitRedirectingConstructorInvocation(RedirectingConstructorInvocation node) {
     builder.startSpan();
 
     token(node.thisKeyword);
@@ -2499,8 +2492,7 @@ class SourceVisitor extends ThrowingAstVisitor {
 
   @override
   void visitSetOrMapLiteral(SetOrMapLiteral node) {
-    _visitCollectionLiteral(
-        node, node.leftBracket, node.elements, node.rightBracket);
+    _visitCollectionLiteral(node, node.leftBracket, node.elements, node.rightBracket);
   }
 
   @override
@@ -2691,12 +2683,20 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   // ...........................................................................
-  T? child<T>(AstNode? node, int at) {
+  T? _child<T>(AstNode? node, int at, int numChildEntities, int numSearchedElements) {
     if (node == null) {
       return null;
     }
 
     if (at >= node.childEntities.length) {
+      return null;
+    }
+
+    if (node.childEntities.length != numChildEntities) {
+      return null;
+    }
+
+    if (node.childEntities.whereType<T>().length != numSearchedElements) {
       return null;
     }
 
@@ -2717,21 +2717,224 @@ class SourceVisitor extends ThrowingAstVisitor {
             return true;
           }
         }
+      } else if (child is VariableDeclarationStatement) {
+        for (final child2 in child.childEntities) {
+          if (child2 is VariableDeclarationList) {
+            for (final variable in child2.variables) {
+              for (final child3 in variable.childEntities) {
+                if (child3 is AwaitExpression) {
+                  return true;
+                }
+              }
+            }
+          }
+        }
       }
     }
     return false;
   }
 
   // ...........................................................................
-  bool ggProcessTestExceptionType(TryStatement node) {
-    final throwingCode = child<Block>(node, 1);
-    final catchClause = child<CatchClause>(node, 2);
-    final block = child<Block>(catchClause, 6);
-    final expression = child<ExpressionStatement>(block, 1);
-    final methodInvocation = child<MethodInvocation>(expression, 0);
-    final argumentList = child<ArgumentList>(methodInvocation, 1);
-    final isExpression = child<IsExpression>(argumentList, 1);
-    final errorType = child<NamedType>(isExpression, 2);
+
+  // Example
+  //   try {
+  //     RefreshTokenInterceptor.instance(tokenRefreshBloc: null);
+  //     fail('it should throw an exception');
+  //   } on Object catch (error) {
+  //     expect(error is AssertionError, true);
+  //   }
+
+  bool ggProcessTry01(TryStatement node) {
+    if (node.catchClauses.length != 1) {
+      return false;
+    }
+
+    if (node.finallyBlock != null) {
+      return false;
+    }
+
+    final throwingCode = _child<Block>(node, 1, 3, 1);
+    final catchClause = _child<CatchClause>(node, 2, 3, 1);
+    final block = _child<Block>(catchClause, 6, 7, 1);
+    final expression = _child<ExpressionStatement>(block, 1, 3, 1);
+    final methodInvocation = _child<MethodInvocation>(expression, 0, 2, 1);
+    final argumentList = _child<ArgumentList>(methodInvocation, 1, 2, 1);
+    final isExpression = _child<IsExpression>(argumentList, 1, 4, 1);
+    final errorType = _child<NamedType>(isExpression, 2, 3, 1);
+    bool containsAwait = _containsAwait(node);
+    if (errorType != null && throwingCode != null) {
+      final asyncStr = containsAwait ? 'async ' : '';
+
+      _writeText('expect(    () $asyncStr', node.offset);
+      visit(node.body);
+      _writeText(', throwsA(isA<${errorType.name.name}>(),),);', node.offset);
+      return true;
+    }
+
+    return false;
+  }
+
+  // ...........................................................................
+  // Example
+  //   try {
+  //     await cdStoreCnApiClient.getBookedServices(
+  //       vin: testVehicleModel.vin,
+  //     );
+  //   } on Object catch (e) {
+  //     expect(e, expectedError);
+  //   }
+
+  bool ggProcessTry02(TryStatement node) {
+    if (node.catchClauses.length != 1) {
+      return false;
+    }
+
+    if (node.finallyBlock != null) {
+      return false;
+    }
+
+    final throwingCode = _child<Block>(node, 1, 3, 1);
+    final catchClause = _child<CatchClause>(node, 2, 3, 1);
+    final block = _child<Block>(catchClause, 6, 7, 1);
+    final expression = _child<ExpressionStatement>(block, 1, 3, 1);
+    final methodInvocation = _child<MethodInvocation>(expression, 0, 2, 1);
+    final argumentList = _child<ArgumentList>(methodInvocation, 1, 2, 1);
+    final expectedError = _child<SimpleIdentifier>(argumentList, 2, 4, 2);
+    bool containsAwait = _containsAwait(node);
+    if (expectedError != null && throwingCode != null) {
+      final asyncStr = containsAwait ? 'async ' : '';
+
+      _writeText('expect(    () $asyncStr', node.offset);
+      visit(node.body);
+      _writeText(', throwsA(${expectedError.name}),);', node.offset);
+      return true;
+    }
+
+    return false;
+  }
+
+  // ...........................................................................
+  // Example
+  //   try {
+  //     await connectedDrivePreactivationCnApiClient.postAddEnrollment(
+  //       detail: detail,
+  //     );
+  //   } on Object catch (_) {
+  //     fail('should not throw');
+  //   }
+
+  bool ggProcessTry03(TryStatement node) {
+    if (node.catchClauses.length != 1) {
+      return false;
+    }
+
+    if (node.finallyBlock != null) {
+      return false;
+    }
+
+    final throwingCode = _child<Block>(node, 1, 3, 1);
+    final catchClause = _child<CatchClause>(node, 2, 3, 1);
+    final block = _child<Block>(catchClause, 6, 7, 1);
+    final expression = _child<ExpressionStatement>(block, 1, 3, 1);
+    final methodInvocation = _child<MethodInvocation>(expression, 0, 2, 1);
+    final argumentList = _child<ArgumentList>(methodInvocation, 1, 2, 1);
+    final shouldNotThrowText = _child<SimpleStringLiteral>(argumentList, 1, 3, 1);
+    bool containsAwait = _containsAwait(node);
+    final message = shouldNotThrowText?.stringValue?.toLowerCase();
+    final expectedMessages = [
+      'should not throw',
+      'should no throw exception',
+      'should not throw exception',
+    ];
+    if (throwingCode != null && expectedMessages.contains(message)) {
+      final asyncStr = containsAwait ? 'async ' : '';
+
+      _writeText('expect(    () $asyncStr', node.offset);
+      visit(node.body);
+      _writeText(', returnsNormally,);', node.offset);
+      return true;
+    }
+
+    return false;
+  }
+
+  // ...........................................................................
+  // Example
+  //    try {
+  //      await bmwServiceInclusiveApiClient.getWarrantyPlans(vin: vin);
+  //      fail('Throws error and line is never reached.');
+  //    } on Object catch (response) {
+  //      expect(BsiHttpError(400), response);
+  //    }
+
+  bool ggProcessTry04(TryStatement node) {
+    if (node.catchClauses.length != 1) {
+      return false;
+    }
+
+    if (node.finallyBlock != null) {
+      return false;
+    }
+
+    final throwingCode = _child<Block>(node, 1, 3, 1);
+    final catchClause = _child<CatchClause>(node, 2, 3, 1);
+    final block = _child<Block>(catchClause, 6, 7, 1);
+    final expression = _child<ExpressionStatement>(block, 1, 3, 1);
+    final methodInvocation = _child<MethodInvocation>(expression, 0, 2, 1);
+    final argumentList = _child<ArgumentList>(methodInvocation, 1, 2, 1);
+    if (argumentList?.arguments.length != 2) {
+      return false;
+    }
+    final methodArgument =
+        _child<MethodInvocation>(argumentList, 1, 4, 1) ?? _child<MethodInvocation>(argumentList, 2, 4, 1);
+    final simpleIdentifierArgument =
+        _child<SimpleIdentifier>(argumentList, 1, 4, 1) ?? _child<MethodInvocation>(argumentList, 2, 4, 1);
+    bool containsAwait = _containsAwait(node);
+    if (methodArgument != null && throwingCode != null && simpleIdentifierArgument != null) {
+      final asyncStr = containsAwait ? 'async ' : '';
+
+      _writeText('expect(    () $asyncStr', node.offset);
+      visit(node.body);
+      _writeText(', throwsA(', node.offset);
+      visit(methodArgument);
+      _writeText('),);', node.offset);
+      return true;
+    }
+
+    return false;
+  }
+
+  // ...........................................................................
+  // Example
+  //   try {
+  //     await cdStoreCnApiClient.getBookedServices(
+  //       vin: testVehicleModel.vin,
+  //     );
+  //   } on Object catch (e) {
+  //     expect(e, expectedError);
+  //   }
+
+  bool ggProcessTry05(TryStatement node) {
+    if (node.catchClauses.length != 1) {
+      return false;
+    }
+
+    if (node.finallyBlock != null) {
+      return false;
+    }
+
+    final throwingCode = _child<Block>(node, 1, 3, 1);
+    final catchClause = _child<CatchClause>(node, 2, 3, 1);
+    final catchBlock = _child<Block>(catchClause, 6, 7, 1);
+    final isNotNullExpression = _child<ExpressionStatement>(catchBlock, 1, 4, 2);
+    if (isNotNullExpression.toString() != 'expect(error, isNotNull);') {
+      return false;
+    }
+    final expression = _child<ExpressionStatement>(catchBlock, 2, 4, 2);
+    final methodInvocation = _child<MethodInvocation>(expression, 0, 2, 1);
+    final argumentList = _child<ArgumentList>(methodInvocation, 1, 2, 1);
+    final isExpression = _child<IsExpression>(argumentList, 1, 4, 1);
+    final errorType = _child<NamedType>(isExpression, 2, 3, 1);
     bool containsAwait = _containsAwait(node);
     if (errorType != null && throwingCode != null) {
       final asyncStr = containsAwait ? 'async ' : '';
@@ -2750,7 +2953,11 @@ class SourceVisitor extends ThrowingAstVisitor {
   void visitTryStatement(TryStatement node) {
     var didProcess = false;
     if (useGgModifications) {
-      didProcess = ggProcessTestExceptionType(node);
+      didProcess = ggProcessTry01(node) ||
+          ggProcessTry02(node) ||
+          ggProcessTry03(node) ||
+          ggProcessTry04(node) ||
+          ggProcessTry05(node);
     }
 
     if (!didProcess) {
@@ -2805,11 +3012,9 @@ class SourceVisitor extends ThrowingAstVisitor {
     //             aValue,
     //         b =
     //             bValue;
-    var hasMultipleVariables =
-        (node.parent as VariableDeclarationList).variables.length > 1;
+    var hasMultipleVariables = (node.parent as VariableDeclarationList).variables.length > 1;
 
-    _visitAssignment(node.equals!, node.initializer!,
-        nest: hasMultipleVariables);
+    _visitAssignment(node.equals!, node.initializer!, nest: hasMultipleVariables);
   }
 
   @override
@@ -2907,19 +3112,16 @@ class SourceVisitor extends ThrowingAstVisitor {
     // Preserve a blank line before the first directive since users (in
     // particular the test package) sometimes use that for metadata that
     // applies to the entire library and not the following directive itself.
-    var isFirst =
-        directive == (directive.parent as CompilationUnit).directives.first;
+    var isFirst = directive == (directive.parent as CompilationUnit).directives.first;
 
-    visitNodes(directive.metadata,
-        between: newline, after: isFirst ? oneOrTwoNewlines : newline);
+    visitNodes(directive.metadata, between: newline, after: isFirst ? oneOrTwoNewlines : newline);
   }
 
   /// Visits metadata annotations on parameters and type parameters.
   ///
   /// Unlike other annotations, these are allowed to stay on the same line as
   /// the parameter.
-  void visitParameterMetadata(
-      NodeList<Annotation> metadata, void Function() visitParameter) {
+  void visitParameterMetadata(NodeList<Annotation> metadata, void Function() visitParameter) {
     if (metadata.isEmpty) {
       visitParameter();
       return;
@@ -2982,8 +3184,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   ///
   /// If [nest] is true, an extra level of expression nesting is added after
   /// the "=".
-  void _visitAssignment(Token equalsOperator, Expression rightHandSide,
-      {bool nest = false}) {
+  void _visitAssignment(Token equalsOperator, Expression rightHandSide, {bool nest = false}) {
     space();
     token(equalsOperator);
 
@@ -2998,8 +3199,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   /// Visits a type parameter or type argument list.
-  void _visitGenericList(
-      Token leftBracket, Token rightBracket, List<AstNode> nodes) {
+  void _visitGenericList(Token leftBracket, Token rightBracket, List<AstNode> nodes) {
     var rule = TypeArgumentRule();
     builder.startLazyRule(rule);
     builder.startSpan();
@@ -3061,8 +3261,8 @@ class SourceVisitor extends ThrowingAstVisitor {
   ///
   /// The two AST node types are very similar but, alas, share no common
   /// interface type in analyzer, hence the dynamic typing.
-  void _visitMemberDeclaration(/* FunctionDeclaration|MethodDeclaration */ node,
-      /* FunctionExpression|MethodDeclaration */ function) {
+  void _visitMemberDeclaration(
+      /* FunctionDeclaration|MethodDeclaration */ node, /* FunctionExpression|MethodDeclaration */ function) {
     visitMetadata(node.metadata as NodeList<Annotation>);
 
     // Nest the signature in case we have to split between the return type and
@@ -3099,8 +3299,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   /// space before it if it's not empty.
   ///
   /// If [beforeBody] is provided, it is invoked before the body is visited.
-  void _visitBody(TypeParameterList? typeParameters,
-      FormalParameterList? parameters, FunctionBody body,
+  void _visitBody(TypeParameterList? typeParameters, FormalParameterList? parameters, FunctionBody body,
       [void Function()? beforeBody]) {
     // If the body is "=>", add an extra level of indentation around the
     // parameters and a rule that spans the parameters and the "=>". This
@@ -3142,8 +3341,7 @@ class SourceVisitor extends ThrowingAstVisitor {
 
   /// Visits the type parameters (if any) and formal parameters of a method
   /// declaration, function declaration, or generic function type.
-  void _visitParameterSignature(
-      TypeParameterList? typeParameters, FormalParameterList? parameters) {
+  void _visitParameterSignature(TypeParameterList? typeParameters, FormalParameterList? parameters) {
     // Start the nesting for the parameters here, so they indent past the
     // type parameters too, if any.
     builder.nestExpression();
@@ -3182,9 +3380,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   /// Visit a list of [nodes] if not null, optionally separated and/or preceded
   /// and followed by the given functions.
   void visitNodes(Iterable<AstNode> nodes,
-      {void Function()? before,
-      void Function()? between,
-      void Function()? after}) {
+      {void Function()? before, void Function()? between, void Function()? after}) {
     if (nodes.isEmpty) return;
 
     if (before != null) before();
@@ -3199,8 +3395,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   /// Visit a comma-separated list of [nodes] if not null.
-  void visitCommaSeparatedNodes(Iterable<AstNode> nodes,
-      {void Function()? between}) {
+  void visitCommaSeparatedNodes(Iterable<AstNode> nodes, {void Function()? between}) {
     if (nodes.isEmpty) return;
 
     between ??= space;
@@ -3222,14 +3417,11 @@ class SourceVisitor extends ThrowingAstVisitor {
   ///
   /// This is also used for argument lists with a trailing comma which are
   /// considered "collection-like". In that case, [node] is `null`.
-  void _visitCollectionLiteral(TypedLiteral? node, Token leftBracket,
-      Iterable<AstNode> elements, Token rightBracket,
+  void _visitCollectionLiteral(TypedLiteral? node, Token leftBracket, Iterable<AstNode> elements, Token rightBracket,
       [int? cost]) {
     if (node != null) {
       // See if `const` should be removed.
-      if (node.constKeyword != null &&
-          _constNesting > 0 &&
-          _formatter.fixes.contains(StyleFix.optionalConst)) {
+      if (node.constKeyword != null && _constNesting > 0 && _formatter.fixes.contains(StyleFix.optionalConst)) {
         // Don't lose comments before the discarded keyword, if any.
         writePrecedingCommentsAndNewlines(node.constKeyword!);
       } else {
@@ -3283,8 +3475,7 @@ class SourceVisitor extends ThrowingAstVisitor {
       if (element != elements.first) {
         if (preserveNewlines) {
           // See if the next element is on the next line.
-          if (_endLine(element.beginToken.previous!) !=
-              _startLine(element.beginToken)) {
+          if (_endLine(element.beginToken.previous!) != _startLine(element.beginToken)) {
             oneOrTwoNewlines();
 
             // Start a new rule for the new line.
@@ -3369,8 +3560,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     }
 
     // Put comments before the closing ")", "]", or "}" inside the block.
-    var firstDelimiter =
-        parameters.rightDelimiter ?? parameters.rightParenthesis;
+    var firstDelimiter = parameters.rightDelimiter ?? parameters.rightParenthesis;
     writePrecedingCommentsAndNewlines(firstDelimiter);
     builder = builder.endBlock(null, forceSplit: true);
     builder.endRule();
@@ -3403,12 +3593,8 @@ class SourceVisitor extends ThrowingAstVisitor {
   /// Used also by a fix, so there may not be a [functionKeyword].
   /// In that case [functionKeywordPosition] should be the source position
   /// used for the inserted "Function" text.
-  void _visitGenericFunctionType(
-      AstNode? returnType,
-      Token? functionKeyword,
-      int? functionKeywordPosition,
-      TypeParameterList? typeParameters,
-      FormalParameterList parameters) {
+  void _visitGenericFunctionType(AstNode? returnType, Token? functionKeyword, int? functionKeywordPosition,
+      TypeParameterList? typeParameters, FormalParameterList parameters) {
     builder.startLazyRule();
     builder.nestExpression();
 
@@ -3429,8 +3615,8 @@ class SourceVisitor extends ThrowingAstVisitor {
   /// Also used by a fix so there may not be an [equals] token.
   /// If [equals] is `null`, then [equalsPosition] must be a
   /// position to use for the inserted text "=".
-  void _visitGenericTypeAliasHeader(Token typedefKeyword, AstNode name,
-      AstNode? typeParameters, Token? equals, int? equalsPosition) {
+  void _visitGenericTypeAliasHeader(
+      Token typedefKeyword, AstNode name, AstNode? typeParameters, Token? equals, int? equalsPosition) {
     token(typedefKeyword);
     space();
 
@@ -3462,8 +3648,7 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   /// Whether [node] is a spread of a collection literal.
-  bool _isSpreadCollection(AstNode node) =>
-      _findSpreadCollectionBracket(node) != null;
+  bool _isSpreadCollection(AstNode node) => _findSpreadCollectionBracket(node) != null;
 
   /// Whether the collection literal or block containing [nodes] and
   /// terminated by [rightBracket] is empty or not.
@@ -3484,8 +3669,7 @@ class SourceVisitor extends ThrowingAstVisitor {
     //     } else ...
     if (node.parent is IfStatement) {
       var ifStatement = node.parent as IfStatement;
-      return ifStatement.elseStatement != null &&
-          ifStatement.thenStatement == node;
+      return ifStatement.elseStatement != null && ifStatement.thenStatement == node;
     }
 
     // Force a split in an empty catch if there is a finally or other catch
@@ -3495,8 +3679,7 @@ class SourceVisitor extends ThrowingAstVisitor {
 
       // Split the catch if there is something after it, a finally or another
       // catch.
-      return tryStatement.finallyBlock != null ||
-          node != tryStatement.catchClauses.last.body;
+      return tryStatement.finallyBlock != null || node != tryStatement.catchClauses.last.body;
     }
 
     return false;
@@ -3607,15 +3790,13 @@ class SourceVisitor extends ThrowingAstVisitor {
   /// If [forceSplit] is `true`, forces the body to split. If [ignoredRule] is
   /// given, ignores that rule inside the body when determining if it should
   /// split.
-  void _endLiteralBody(Token rightBracket,
-      {Rule? ignoredRule, bool? forceSplit}) {
+  void _endLiteralBody(Token rightBracket, {Rule? ignoredRule, bool? forceSplit}) {
     forceSplit ??= false;
 
     // Put comments before the closing delimiter inside the block.
     var hasLeadingNewline = writePrecedingCommentsAndNewlines(rightBracket);
 
-    builder = builder.endBlock(ignoredRule,
-        forceSplit: hasLeadingNewline || forceSplit);
+    builder = builder.endBlock(ignoredRule, forceSplit: hasLeadingNewline || forceSplit);
 
     builder.endRule();
 
@@ -3725,9 +3906,7 @@ class SourceVisitor extends ThrowingAstVisitor {
 
   /// Returns `true` if [node] is immediately contained within an anonymous
   /// [FunctionExpression].
-  bool _isInLambda(AstNode node) =>
-      node.parent is FunctionExpression &&
-      node.parent!.parent is! FunctionDeclaration;
+  bool _isInLambda(AstNode node) => node.parent is FunctionExpression && node.parent!.parent is! FunctionDeclaration;
 
   /// Writes the string literal [string] to the output.
   ///
@@ -3892,8 +4071,7 @@ class SourceVisitor extends ThrowingAstVisitor {
       var commentLine = _startLine(comment);
 
       // Don't preserve newlines at the top of the file.
-      if (comment == token.precedingComments &&
-          token.previous!.type == TokenType.EOF) {
+      if (comment == token.precedingComments && token.previous!.type == TokenType.EOF) {
         previousLine = commentLine;
       }
 
@@ -3910,8 +4088,7 @@ class SourceVisitor extends ThrowingAstVisitor {
       }
 
       var type = CommentType.block;
-      if (text.startsWith('///') && !text.startsWith('////') ||
-          text.startsWith('/**')) {
+      if (text.startsWith('///') && !text.startsWith('////') || text.startsWith('/**')) {
         type = CommentType.doc;
       } else if (comment.type == TokenType.SINGLE_LINE_COMMENT) {
         type = CommentType.line;
@@ -3919,8 +4096,7 @@ class SourceVisitor extends ThrowingAstVisitor {
         type = CommentType.inlineBlock;
       }
 
-      var sourceComment =
-          SourceComment(text, type, linesBefore, flushLeft: flushLeft);
+      var sourceComment = SourceComment(text, type, linesBefore, flushLeft: flushLeft);
 
       // If this comment contains either of the selection endpoints, mark them
       // in the comment.
@@ -4064,6 +4240,5 @@ class SourceVisitor extends ThrowingAstVisitor {
   int _endLine(Token token) => _lineInfo.getLocation(token.end).lineNumber;
 
   /// Gets the 1-based column number that the beginning of [token] lies on.
-  int _startColumn(Token token) =>
-      _lineInfo.getLocation(token.offset).columnNumber;
+  int _startColumn(Token token) => _lineInfo.getLocation(token.offset).columnNumber;
 }
