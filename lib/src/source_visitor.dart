@@ -2709,7 +2709,21 @@ class SourceVisitor extends ThrowingAstVisitor {
   }
 
   // ...........................................................................
-  void ggProcessTestExceptionType(TryStatement node) {
+  bool _containsAwait(TryStatement node) {
+    for (final child in node.body.childEntities) {
+      if (child is ExpressionStatement) {
+        for (final child1 in child.childEntities) {
+          if (child1 is AwaitExpression) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  // ...........................................................................
+  bool ggProcessTestExceptionType(TryStatement node) {
     final throwingCode = child<Block>(node, 1);
     final catchClause = child<CatchClause>(node, 2);
     final block = child<Block>(catchClause, 6);
@@ -2718,19 +2732,28 @@ class SourceVisitor extends ThrowingAstVisitor {
     final argumentList = child<ArgumentList>(methodInvocation, 1);
     final isExpression = child<IsExpression>(argumentList, 1);
     final errorType = child<NamedType>(isExpression, 2);
+    bool containsAwait = _containsAwait(node);
     if (errorType != null && throwingCode != null) {
-      _writeText('expect(    () ', node.offset);
+      final asyncStr = containsAwait ? 'async ' : '';
+
+      _writeText('expect(    () $asyncStr', node.offset);
       visit(node.body);
       _writeText(', throwsA(isA<${errorType.name.name}>(),),);', node.offset);
+      return true;
     }
+
+    return false;
   }
 
   // ...........................................................................
   @override
   void visitTryStatement(TryStatement node) {
+    var didProcess = false;
     if (useGgModifications) {
-      ggProcessTestExceptionType(node);
-    } else {
+      didProcess = ggProcessTestExceptionType(node);
+    }
+
+    if (!didProcess) {
       token(node.tryKeyword);
       space();
       visit(node.body);

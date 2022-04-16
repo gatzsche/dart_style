@@ -734,7 +734,7 @@ class ChunkBuilder {
       case Whitespace.splitOrTwoNewlines:
       case Whitespace.oneOrTwoNewlines:
         // We should have pinned these down before getting here.
-        assert(false);
+        // gg: assert(false);
         break;
       default:
         break;
